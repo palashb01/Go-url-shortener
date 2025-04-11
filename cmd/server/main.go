@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"crypto/tls"
 	"net"
 	"net/http"
 	"os"
@@ -9,9 +10,9 @@ import (
 	shortenerv1 "github.com/palashb01/Go-url-shortener/gen/go/proto/shortener/v1"
 	"github.com/palashb01/Go-url-shortener/internal/service"
 	"github.com/redis/go-redis/v9"
+	"github.com/rs/cors"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
-	"github.com/rs/cors"
 
 	gw "github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"google.golang.org/grpc"
@@ -35,6 +36,7 @@ func main() {
 	rdb := redis.NewClient(&redis.Options{
 		Addr:     redisAddr,
 		Password: redisPassword,
+		TLSConfig: &tls.Config{},
 	})
 
 	if err := rdb.Ping(ctx).Err(); err != nil {
