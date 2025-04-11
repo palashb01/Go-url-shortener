@@ -9,6 +9,7 @@
     
     # Copy source code
     COPY . .
+    COPY ./frontend ./frontend
     
     # Build the Go server
     RUN go build -o /url-shortener ./cmd/server

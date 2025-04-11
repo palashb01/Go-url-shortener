@@ -62,21 +62,35 @@ func main() {
 	}()
 
 	// gRPC-Gateway (REST)
-	mux := gw.NewServeMux()
-	err := shortenerv1.RegisterShortenerServiceHandlerFromEndpoint(ctx, mux, ":9090", []grpc.DialOption{grpc.WithTransportCredentials(insecure.NewCredentials())})
+	gwmux := gw.NewServeMux()
+	err := shortenerv1.RegisterShortenerServiceHandlerFromEndpoint(ctx, gwmux, ":9090", []grpc.DialOption{
+		grpc.WithTransportCredentials(insecure.NewCredentials()),
+	})
 	if err != nil {
-		log.Fatal().Err(err).Msg("Failed to start gRPC-Gateway")
+		log.Fatal().Err(err).Msg("Failed to register gRPC-Gateway")
 	}
 
-	handler := cors.New(cors.Options{
+// REST + Static UI mux
+	mux := http.NewServeMux()
+
+	// Serve frontend HTML
+	mux.Handle("/", http.FileServer(http.Dir("./frontend")))
+
+	// Serve gRPC-Gateway under /v1/
+	mux.Handle("/v1/", cors.New(cors.Options{
 		AllowedOrigins:   []string{"*"},
 		AllowedMethods:   []string{"GET", "POST", "OPTIONS"},
 		AllowedHeaders:   []string{"Content-Type", "Accept"},
 		AllowCredentials: true,
-	}).Handler(mux)
+	}).Handler(gwmux))
 
-	log.Info().Msg("REST Gateway listening on :8080")
-	if err := http.ListenAndServe(":8080", handler); err != nil {
-		log.Fatal().Err(err).Msg("REST Gateway failed")
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8080"
+	}
+
+	log.Info().Msgf("HTTP server listening on :%s", port)
+	if err := http.ListenAndServe(":"+port, mux); err != nil {
+		log.Fatal().Err(err).Msg("HTTP server failed")
 	}
 }
