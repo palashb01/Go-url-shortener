@@ -74,7 +74,7 @@ func main() {
 	mux := http.NewServeMux()
 
 	// Serve frontend HTML
-	mux.Handle("/", http.FileServer(http.Dir("./frontend")))
+	mux.Handle("/", http.StripPrefix("/", http.FileServer(http.Dir("./frontend"))))
 
 	// Serve gRPC-Gateway under /v1/
 	mux.Handle("/v1/", cors.New(cors.Options{
