@@ -1,20 +1,22 @@
 # 🚀 URL Shortener App
 
-A full-featured URL Shortener service built with **Golang**, **gRPC**, **gRPC-Gateway**, **Redis**, **Docker**, and a minimal **HTML frontend UI**. You can shorten long URLs, resolve short codes back to original URLs, and interact via REST, gRPC, or Swagger UI.
+A full-featured URL Shortener service built with **Golang**, **gRPC**, **gRPC-Gateway**, **Redis**, **Docker**, and a clean **HTML frontend UI**. You can shorten long URLs, resolve short codes back to original URLs, and interact via REST, gRPC, or Swagger UI.
+
+Hosted live on [Render](https://render.com) with Upstash Redis 🚀
 
 ---
 
 ## 🧱 Tech Stack
 
-| Layer        | Tech                         |
+| Layer        | Tech                          |
 |--------------|-------------------------------|
 | Language     | Go 1.23+                      |
 | API          | gRPC + gRPC-Gateway (REST)    |
-| Storage      | Redis                         |
-| Frontend     | HTML + CSS + JS (no framework)|
+| Storage      | Upstash Redis (TLS-secured)   |
+| Frontend     | HTML + CSS + JS               |
 | API Docs     | Swagger/OpenAPI + Swagger UI  |
-| Packaging    | Docker & docker-compose       |
-| Deployment   | Cloud-ready (Railway/Fly.io)  |
+| Packaging    | Docker + Multi-stage builds   |
+| Deployment   | Render (Docker image)         |
 
 ---
 
@@ -25,17 +27,18 @@ A full-featured URL Shortener service built with **Golang**, **gRPC**, **gRPC-Ga
 ├── cmd/                    # Main server entrypoint
 │   └── server/main.go
 ├── internal/
-│   ├── service/            # gRPC service logic
+│   └── service/            # gRPC service logic
 ├── gen/                   # Generated protobuf & gateway files
 │   ├── go/
 │   └── openapiv2/
 ├── proto/                 # Protobuf definitions
 │   └── shortener/v1/
 │       └── shortener.proto
-├── frontend/              # Static UI (served via NGINX)
+├── frontend/              # Static frontend UI served via Go
 │   └── index.html
-├── docker-compose.yml     # Full Docker setup
-├── Dockerfile             # Docker image for Go server
+├── swagger-ui/            # Swagger UI assets (optional)
+├── docker-compose.yml     # Local dev with Docker
+├── Dockerfile             # Multi-stage container image
 ├── buf.yaml               # Buf module config
 ├── buf.gen.yaml           # Buf codegen plugins
 └── README.md              # This file
@@ -47,41 +50,39 @@ A full-featured URL Shortener service built with **Golang**, **gRPC**, **gRPC-Ga
 
 - 🔗 **Shorten URLs** — POST a long URL and get a short code
 - 🧭 **Resolve Short Codes** — Resolve any code to the original URL
-- 💬 **REST + gRPC APIs**
-- 🧼 Clean, pretty HTML UI to interact visually
-- 🧪 Swagger/OpenAPI documentation with live testing
-- 🐳 Docker + Compose for unified local/dev/prod environments
+- 💬 **REST + gRPC APIs** (via gRPC-Gateway)
+- 🧼 Clean static UI with live link shortening
+- 📜 **Swagger UI** auto-generated from proto
+- 🐳 Production-ready Docker build & deploy
 
 ---
 
 ## 💻 Local Development
 
-### 🧰 Prerequisites
+### Prerequisites
 - Go 1.23+
 - Docker + Docker Compose
-- [Buf CLI](https://buf.build/docs/installation) (for generating proto files)
+- [Buf CLI](https://buf.build/docs/installation)
 
-### 🔧 Generate Protobuf Code
-
+### Generate Protobuf & Gateway Files
 ```bash
 buf generate
 ```
 
-### 🐳 Run the Full App with Docker Compose
-
+### Run Locally (All Services)
 ```bash
 docker-compose up --build
 ```
 
-> Ports:
+> Exposed Ports:
 > - Frontend UI → http://localhost:3000
-> - REST API → http://localhost:8080
-> - gRPC Server → localhost:9090
-> - Swagger UI → http://localhost:8081
+> - REST API    → http://localhost:8080
+> - gRPC        → localhost:9090
+> - Swagger UI  → http://localhost:8081
 
 ---
 
-## 🔗 REST API Endpoints
+## 🔗 API Endpoints
 
 ### `POST /v1/shorten`
 **Request:**
@@ -93,7 +94,7 @@ docker-compose up --build
 **Response:**
 ```json
 {
-  "shortUrl": "http://localhost:8080/v1/resolve/abc123"
+  "shortUrl": "https://your-app.onrender.com/v1/resolve/abc123"
 }
 ```
 
@@ -109,22 +110,33 @@ docker-compose up --build
 
 ## 🖥️ Frontend UI
 
-Available at: `http://localhost:3000`
-
-- Input a long URL → Click “Shorten” → Get a short URL
-- Enter a short code → Click “Resolve” → Get original URL
-- Includes link to Swagger docs
+- Auto-served from `/`
+- Type a long URL → shorten → copy
+- Paste a short code → resolve → get original URL
+- Link to Swagger docs auto-generated via `window.location.origin`
 
 ---
 
 ## 📜 Swagger Docs
 
-Available at: `http://localhost:8081`
+- Live at `/docs` on the deployed app
+- Interactive docs from `shortener.swagger.json`
+- Generated via `buf + openapiv2`
 
-Swagger UI loads `shortener.swagger.json` generated from your protobuf definitions. You can:
-- Test endpoints live
-- See expected request/response formats
-- Try `POST /v1/shorten`, `GET /v1/resolve/{shortCode}`
+---
+
+## 🧑‍💻 Deployment
+
+Deployed to [Render](https://render.com) with:
+- Dockerfile (multi-stage)
+- Upstash Redis (external cloud DB)
+- Auto-detected port binding using `$PORT`
+- Environment Variables:
+  - `REDIS_ADDR`
+  - `REDIS_PASSWORD`
+  - `API_HOST`
+
+You can fork and deploy this to your own Render project!
 
 ---
 
@@ -134,4 +146,5 @@ Want to contribute, improve the UI, or extend features? PRs welcome! 🫶
 
 ---
 
-## This is a fun and self-learning project only.
+> This is a fun and self-learning project only.
+
