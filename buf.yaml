@@ -1,0 +1,4 @@
+version: v1
+name: buf.build/palashb01/urlshortener
+deps:
+  - buf.build/googleapis/googleapis

@@ -1,0 +1,35 @@
+version: "3.9"
+
+services:
+  app:
+    build: .
+    ports:
+      - "8080:8080"   # REST
+      - "9090:9090"   # gRPC
+    depends_on:
+      - redis
+    environment:
+      - REDIS_ADDR=redis:6379
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+
+  swagger-ui:
+    image: swaggerapi/swagger-ui
+    ports:
+      - "8081:8080"
+    volumes:
+      - ./gen/openapiv2/proto/shortener/v1:/usr/share/nginx/html/docs
+      - ./swagger-ui/swagger-initializer.js:/usr/share/nginx/html/swagger-initializer.js
+    environment:
+      - SWAGGER_JSON=/docs/shortener.swagger.json
+  frontend:
+    image: nginx:alpine
+    ports:
+      - "3000:80"
+    volumes:
+      - ./frontend:/usr/share/nginx/html:ro
+    depends_on:
+      - app

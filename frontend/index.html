@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>URL Shortener</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #f5f7fa;
+      margin: 0;
+      padding: 2rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    h1 {
+      color: #333;
+      margin-bottom: 2rem;
+    }
+
+    .card {
+      background: white;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      padding: 2rem;
+      margin-bottom: 2rem;
+      width: 100%;
+      max-width: 500px;
+      border-radius: 10px;
+    }
+
+    input {
+      width: 100%;
+      padding: 0.75rem;
+      margin-bottom: 1rem;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 1rem;
+    }
+
+    button {
+      width: 100%;
+      padding: 0.75rem;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+    }
+
+    button:hover {
+      background-color: #45a049;
+    }
+
+    .result {
+      margin-top: 1rem;
+      font-weight: bold;
+      color: #333;
+      word-break: break-word;
+    }
+  </style>
+</head>
+<body>
+  <h1>🚀 URL Shortener</h1>
+
+  <div class="card">
+    <h2>Shorten a URL</h2>
+    <input type="text" id="originalUrl" placeholder="Enter long URL">
+    <button onclick="shorten()">Shorten</button>
+    <p class="result" id="shortenResult"></p>
+  </div>
+
+  <div class="card">
+    <h2>Resolve a Short Code</h2>
+    <input type="text" id="shortCode" placeholder="Enter short code">
+    <button onclick="resolve()">Resolve</button>
+    <p class="result" id="resolveResult"></p>
+  </div>
+
+  <p style="margin-top: 2rem; font-size: 0.95rem; color: #555;">
+    🛠️ Want to explore the API?  
+    <a href="http://localhost:8081" target="_blank" style="color: #4CAF50; text-decoration: none;">
+      View Swagger Docs →
+    </a>
+  </p>
+  
+  <script>
+    const API_BASE = window.location.origin.replace(":3000", ":8080");
+
+async function shorten() {
+  const url = document.getElementById('originalUrl').value;
+  const res = await fetch(`${API_BASE}/v1/shorten`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ originalUrl: url })
+  });
+  const data = await res.json();
+  document.getElementById('shortenResult').innerText = data.shortUrl || 'Error';
+}
+
+async function resolve() {
+  const code = document.getElementById('shortCode').value;
+  const res = await fetch(`${API_BASE}/v1/resolve/${code}`);
+  const data = await res.json();
+  document.getElementById('resolveResult').innerText = data.originalUrl || 'Not found';
+}
+
+  </script>
+</body>
+</html>
