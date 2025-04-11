@@ -3,15 +3,10 @@
 
     WORKDIR /app
     
-    # Install dependencies
     COPY go.mod go.sum ./
     RUN go mod download
     
-    # Copy source code
     COPY . .
-    COPY ./frontend ./frontend
-    
-    # Build the Go server
     RUN go build -o /url-shortener ./cmd/server
     
     # --------- Final minimal image ---------
@@ -19,9 +14,13 @@
     
     WORKDIR /app
     
+    # ✅ Copy the binary
     COPY --from=builder /url-shortener .
     
-    # Optional: for pretty Zerolog output (if using color)
+    # ✅ Copy the frontend folder explicitly
+    COPY --from=builder /app/frontend ./frontend
+    
+    # Optional: for pretty logs
     ENV TERM=xterm-256color
     
     EXPOSE 8080 9090
