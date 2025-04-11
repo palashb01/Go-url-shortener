@@ -26,15 +26,16 @@ func main() {
 
 	ctx := context.Background()
 
-	// Redis setup
 	redisAddr := os.Getenv("REDIS_ADDR")
 	if redisAddr == "" {
-		redisAddr = "localhost:6379" // fallback for local dev
+		redisAddr = "localhost:6379"
 	}
-	rdb := redis.NewClient(&redis.Options{
-		Addr: redisAddr,
-	})
 
+	redisPassword := os.Getenv("REDIS_PASSWORD")
+	rdb := redis.NewClient(&redis.Options{
+		Addr:     redisAddr,
+		Password: redisPassword,
+	})
 
 	if err := rdb.Ping(ctx).Err(); err != nil {
 		log.Fatal().Err(err).Msg("Failed to connect to Redis")
