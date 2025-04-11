@@ -1,4 +1,4 @@
-module github.com/palashb01/url-shortener
+module github.com/palashb01/Go-url-shortener
 
 go 1.23.0
 

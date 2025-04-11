@@ -9,7 +9,7 @@ import (
 	"strings"
 	"time"
 
-	shortenerv1 "github.com/palashb01/url-shortener/gen/go/proto/shortener/v1"
+	shortenerv1 "github.com/palashb01/Go-url-shortener/gen/go/proto/shortener/v1"
 	"github.com/redis/go-redis/v9"
 	"github.com/rs/zerolog/log"
 	"google.golang.org/grpc/codes"

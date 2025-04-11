@@ -6,8 +6,8 @@ import (
 	"net/http"
 	"os"
 
-	shortenerv1 "github.com/palashb01/url-shortener/gen/go/proto/shortener/v1"
-	"github.com/palashb01/url-shortener/internal/service"
+	shortenerv1 "github.com/palashb01/Go-url-shortener/gen/go/proto/shortener/v1"
+	"github.com/palashb01/Go-url-shortener/internal/service"
 	"github.com/redis/go-redis/v9"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
